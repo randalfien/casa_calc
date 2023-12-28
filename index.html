@@ -142,6 +142,9 @@ max-width: 100%;
     color: black;
     border: 0;
 }
+.valuetablecellValues{
+    margin:20px 0;
+}
 
 .github-link {
     position: fixed;
@@ -160,7 +163,7 @@ max-width: 100%;
 <body>
 <div class="content-container"> 
 <div class="header-container">
-    <h1 id="headline">Hypo Calc</h1>
+    <h1 id="headline">Casa Calc</h1>
     <img src="hypoicon.png" style="float:right; padding: 10px;" width="150px" >
 </div>
 
@@ -197,18 +200,16 @@ max-width: 100%;
 
 
 
-    <div class="valuetable">
+    <div id="valuetable" class="valuetable" style="visibility: hidden">
             <div class="valuetablecell">
-                <div style = "margin:20px 0;">
-                    <label id="totalPaidLabel">Total amount paid:</label><br>
-                    <label id="totalInterestPaidLabel">Total interest paid:</label><br>
-                    <label id="totalPaidInStartYearMoney">Total paid with inflation:</label>
-                 </div>
+                <button onclick="selectSavedValue(1)" id="selectButton1" class="valuetableselectbutton" > </button>
+                <div class="valuetablecellValues">
+                    <label id="totalPaidLabel1">Total amount paid:</label><br>
+                    <label id="totalInterestPaidLabel1">Total interest paid:</label><br>
+                    <label id="totalPaidInStartYearMoney1">Total paid with inflation:</label>
+                </div>
+                    <button onclick="saveCurrentValues(1)" id="saveButton1" class="valuetablebutton" >+</button>
             </div>
-            <div class="valuetablecell">  <button onclick="selectSavedValue(2)" id="selectButton2" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(2)" id="saveButton2" class="valuetablebutton" >+</button></div>
-            <div class="valuetablecell">  <button onclick="selectSavedValue(3)" id="selectButton3" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(3)" id="saveButton3" class="valuetablebutton" >+</button></div>
-            <div class="valuetablecell">  <button onclick="selectSavedValue(4)" id="selectButton4" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(4)" id="saveButton4" class="valuetablebutton" >+</button></div>
-
     </div>
 
     <table>

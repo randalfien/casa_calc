@@ -12,6 +12,34 @@ function adjustForInflation(amount, years, inflationRate){
 	return amount / Math.pow(1+inflationRate, years);
 }
 
+function prepareSavingTable() {
+	var originalDiv = document.querySelector('.valuetablecell');
+	var parentDiv = document.getElementById('valuetable');
+	parentDiv.style.visibility = "";
+	for (var i = 2; i <= 4; i++) {
+		// Clone the original div
+		var clone = originalDiv.cloneNode(true);
+
+		// Update the IDs of all elements within the cloned div
+		clone.querySelectorAll('[id]').forEach(function(el) {
+			var originalId = el.id;
+			el.id = originalId.replace(/1$/, i.toString());
+		});
+
+		// Update the onclick attribute for buttons
+		clone.querySelector('.valuetableselectbutton').style.display = "none";
+		clone.querySelector('.valuetableselectbutton').setAttribute('onclick', 'selectSavedValue(' + i + ')');
+		clone.querySelector('.valuetablebutton').setAttribute('onclick', 'saveCurrentValues(' + i + ')');
+		clone.querySelector('.valuetablecellValues').style.display = "none";
+		// Append the cloned div to the parent
+		parentDiv.appendChild(clone);
+	}
+
+	parentDiv.querySelector('.valuetablebutton').style.display = "none";
+}
+
+
+
 let totalInterestPaidEachYear = [];
 let remainingBalanceEachYear = [];
 let interestRatesEachYear = [];
@@ -20,6 +48,8 @@ let loanTermYearsSaved = 0;
 let setInterestValue = "";
 let savedValues = [];
 let lastCalculationArgs = null;
+let currentSelectedSaveSpot = 1;
+
 function calculateMortgage(arguments) {
 	let tableRows = '';
 	let loanTermYears = arguments.loanTermYears;
@@ -113,9 +143,9 @@ function calculateMortgage(arguments) {
 
 	document.getElementById('mortgageTableBody').innerHTML = tableRows;
 
-	document.getElementById('totalInterestPaidLabel').innerHTML = "Total interest paid: " + formatCurrency(totalInterestPaid);
-	document.getElementById('totalPaidLabel').innerHTML = "Total amount paid: " + formatCurrency(totalInterestPaid + arguments.principal);
-	document.getElementById('totalPaidInStartYearMoney').innerHTML = "Total paid with inflation: " + formatCurrency(totalWithInflation);
+	document.getElementById('totalInterestPaidLabel'+currentSelectedSaveSpot).innerHTML = "Total interest paid: " + formatCurrency(totalInterestPaid);
+	document.getElementById('totalPaidLabel'+currentSelectedSaveSpot).innerHTML = "Total amount paid: " + formatCurrency(totalInterestPaid + arguments.principal);
+	document.getElementById('totalPaidInStartYearMoney'+currentSelectedSaveSpot).innerHTML = "Total paid with inflation: " + formatCurrency(totalWithInflation);
 
 	updateGraph(totalInterestPaidEachYear, remainingBalanceEachYear,interestRatesEachYear);
 
@@ -212,6 +242,10 @@ function performCalculation() {
 	}
 
 	calculateMortgage(arguments);
+
+	if( lastCalculationArgs == null ){
+		prepareSavingTable();
+	}
 
 	lastCalculationArgs = arguments;
 }
