@@ -179,6 +179,9 @@ function calculateMortgage(arguments) {
 				});
 			}
 		}, false);
+
+		document.getElementById(`extraPaymentShort${year}`).addEventListener('input', function() {performCalculation()});
+		document.getElementById(`extraPaymentLower${year}`).addEventListener('input', function() {performCalculation()});
 	}
 
 	redoButtonVisibility();
