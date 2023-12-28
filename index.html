@@ -90,16 +90,6 @@ tbody tr:nth-child(odd) {
   display: block;
 }
 
-.cell-btn {
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  transform: translate(-110%, -50%);
-}
-
 .content-container {
   width: 95%;
   max-width: 1280px;
@@ -164,6 +154,11 @@ max-width: 100%;
     height: auto;
 }
 
+.val_diff{
+    font-size: small;
+    color: lightslategrey;
+}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
@@ -212,7 +207,7 @@ max-width: 100%;
                 <div class="valuetablecellValues">
                     <label id="totalPaidLabel1">Total amount paid:</label><br>
                     <label id="totalInterestPaidLabel1">Total interest paid:</label><br>
-                    <label id="totalPaidInStartYearMoney1">Total paid with inflation:</label>
+                    <label id="totalPaidInStartYearMoney1" title="adjusted for inflation">Total AFI:</label>
                 </div>
                 <button onclick="saveCurrentValues(1)" id="saveButton1" class="valuetablebutton" >+</button>
             </div>

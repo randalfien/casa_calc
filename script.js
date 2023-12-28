@@ -8,6 +8,15 @@ function formatCurrency(value) {
 	}).format(value).replace(/,/g, ' ');
 }
 
+function formatCurrencySigned(value) {
+	if( value < 0){
+		return formatCurrency(value);
+	}else if( value > 0){
+		return "+"+formatCurrency(value);
+	}
+	return value;
+}
+
 function adjustForInflation(amount, years, inflationRate){
 	return amount / Math.pow(1+inflationRate, years);
 }
@@ -143,10 +152,13 @@ function calculateMortgage(arguments) {
 
 	document.getElementById('mortgageTableBody').innerHTML = tableRows;
 
+	savedValues[selectedSaveSpot].output = {total:totalInterestPaid + arguments.principal, interest:totalInterestPaid, total_afi:totalWithInflation};
+
 	document.getElementById('totalInterestPaidLabel'+selectedSaveSpot).innerHTML = "Total interest paid: " + formatCurrency(totalInterestPaid);
 	document.getElementById('totalPaidLabel'+selectedSaveSpot).innerHTML = "Total amount paid: " + formatCurrency(totalInterestPaid + arguments.principal);
-	document.getElementById('totalPaidInStartYearMoney'+selectedSaveSpot).innerHTML = "Total paid with inflation: " + formatCurrency(totalWithInflation);
+	document.getElementById('totalPaidInStartYearMoney'+selectedSaveSpot).innerHTML = "Total AFI: " + formatCurrency(totalWithInflation);
 
+	updateDifferences();
 	updateGraph(totalInterestPaidEachYear, remainingBalanceEachYear,interestRatesEachYear);
 
 	for (let year = 1; year <= loanTermYears; year++) {
@@ -241,12 +253,11 @@ function performCalculation() {
 		}
 	}
 
-	if( lastCalculationArgs == null ){
+	if( lastCalculationArgs == null ){ //first run
 		prepareSavingTable();
-		savedValues[1] = arguments;
 	}
 
-	lastCalculationArgs = JSON.parse(JSON.stringify(arguments));
+	lastCalculationArgs = arguments;
 	savedValues[selectedSaveSpot] = lastCalculationArgs;
 
 	calculateMortgage(arguments);
@@ -271,6 +282,19 @@ function saveCurrentValues(i){
 	parentDiv.querySelector('.valuetableselectbutton').style.display = "";
 	parentDiv.querySelector('.valuetablecellValues').style.display = "";
 	parentDiv.querySelector('.valuetablebutton').style.display = "none";
+}
+
+function updateDifferences() {
+	let currentVals = savedValues[selectedSaveSpot].output;// = {total:totalInterestPaid + arguments.principal, interest:totalInterestPaid, total_afi:totalWithInflation};
+	for (let i = 1; i <= 4; i++) {
+		if( i === selectedSaveSpot) continue;
+		let vals = savedValues[i] == null ? null : savedValues[i].output;
+		if( vals == null ) continue;
+
+		document.getElementById('totalInterestPaidLabel' + i).innerHTML = "Total interest paid: " + formatCurrency(vals.interest) + " <span class='val_diff'>("+formatCurrencySigned(vals.interest-currentVals.interest)+")</span>";
+		document.getElementById('totalPaidLabel' + i).innerHTML = "Total amount paid: " + formatCurrency(vals.total)+ " <span class='val_diff'>("+formatCurrencySigned(vals.total-currentVals.total)+")</span>";
+		document.getElementById('totalPaidInStartYearMoney' + i).innerHTML = "Total AFI: " + formatCurrency(vals.total_afi)+ " <span class='val_diff'>("+formatCurrencySigned(vals.total_afi-currentVals.total_afi)+")</span>";
+	}
 }
 
 function updateGraph(totalInterestPaidEachYear, remainingBalanceEachYear, interestRatesEachYear) {
