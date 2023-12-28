@@ -199,7 +199,7 @@ function performCalculation() {
 
 		let extraPaymentElement = document.getElementById(`extraPayment${year}`);
 		if( extraPaymentElement != null ){
-			let extraPaymentAmount = parseFloat(extraPaymentElement.innerHTML.trim());
+			let extraPaymentAmount = parseFloat(extraPaymentElement.innerHTML.replace(/\s+/g, ''));
 			let extraPaymentShortening = false;
 			if (extraPaymentAmount > 0) {
 				let epShortElem = document.getElementById(`extraPaymentShort${year}`);
