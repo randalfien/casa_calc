@@ -138,10 +138,16 @@ max-width: 100%;
     width:100%;
     height: 20px;
     position: absolute;
-    background-color: #55ff35;
+    background-color: grey;
     color: black;
     border: 0;
 }
+
+.valuetableselectbutton:hover {
+    background-color: #55ff35 !important;
+}
+
+
 .valuetablecellValues{
     margin:20px 0;
 }
@@ -201,14 +207,14 @@ max-width: 100%;
 
 
     <div id="valuetable" class="valuetable" style="visibility: hidden">
-            <div class="valuetablecell">
+            <div id = "valuetablecell1" class="valuetablecell">
                 <button onclick="selectSavedValue(1)" id="selectButton1" class="valuetableselectbutton" > </button>
                 <div class="valuetablecellValues">
                     <label id="totalPaidLabel1">Total amount paid:</label><br>
                     <label id="totalInterestPaidLabel1">Total interest paid:</label><br>
                     <label id="totalPaidInStartYearMoney1">Total paid with inflation:</label>
                 </div>
-                    <button onclick="saveCurrentValues(1)" id="saveButton1" class="valuetablebutton" >+</button>
+                <button onclick="saveCurrentValues(1)" id="saveButton1" class="valuetablebutton" >+</button>
             </div>
     </div>
 
