@@ -25,13 +25,13 @@ function prepareSavingTable() {
 	var originalDiv = document.querySelector('.valuetablecell');
 	var parentDiv = document.getElementById('valuetable');
 	parentDiv.style.visibility = "";
-	for (var i = 2; i <= 4; i++) {
+	for (let i = 2; i <= 4; i++) {
 		// Clone the original div
-		var clone = originalDiv.cloneNode(true);
+		let clone = originalDiv.cloneNode(true);
 		clone.id = clone.id.replace(/1$/, i.toString());
 		// Update the IDs of all elements within the cloned div
 		clone.querySelectorAll('[id]').forEach(function(el) {
-			var originalId = el.id;
+			let originalId = el.id;
 			el.id = originalId.replace(/1$/, i.toString());
 		});
 
@@ -40,7 +40,7 @@ function prepareSavingTable() {
 		clone.querySelector('.valuetableselectbutton').setAttribute('onclick', 'selectSavedValue(' + i + ')');
 		clone.querySelector('.valuetablebutton').setAttribute('onclick', 'saveCurrentValues(' + i + ')');
 		clone.querySelector('.valuetablecellValues').style.display = "none";
-		// Append the cloned div to the parent
+
 		parentDiv.appendChild(clone);
 	}
 
@@ -185,7 +185,7 @@ function calculateMortgage(arguments) {
 
 	for (let year = 1; year <= loanTermYears; year++) {
 		document.getElementById(`interestRate${year}`).addEventListener('input', function() {
-			document.getElementById('runButton').innerHTML = "Recalculate Mortgage";
+			document.getElementById('runButton').innerHTML = "Recalculate";
 			redoButtonVisibility();
 		}, false);
 	}
@@ -209,6 +209,7 @@ function redoButtonVisibility(){
 						interestRateElement.innerHTML = value;
 					}
 					redoButtonVisibility();
+					performCalculation();
 					e.stopImmediatePropagation();
 				});
 			} else {
@@ -265,13 +266,19 @@ function performCalculation() {
 
 function selectSavedValue(i){
 	var oldParentDiv = document.getElementById('valuetablecell'+selectedSaveSpot);
-	oldParentDiv.querySelector('.valuetableselectbutton').style.backgroundColor = "grey";
+	oldParentDiv.querySelector('.valuetableselectbutton').style.backgroundColor = "#dddddd";
 
 	selectedSaveSpot = i;
-	calculateMortgage(savedValues[i]);
+	let savedValue = savedValues[i];
+	calculateMortgage(savedValue);
 
 	var parentDiv = document.getElementById('valuetablecell'+i);
-	parentDiv.querySelector('.valuetableselectbutton').style.backgroundColor = "#55ff35";
+	parentDiv.querySelector('.valuetableselectbutton').style.backgroundColor = "#afff9e";
+
+	document.getElementById('principal').value = savedValue.principal;
+	document.getElementById('years').value = savedValue.loanTermYears ;
+	document.getElementById('interest').value = savedValue.interest;
+	document.getElementById('inflation').value = savedValue.inflation * 100;
 }
 
 function saveCurrentValues(i){
