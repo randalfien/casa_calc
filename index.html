@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Pragma" content="no-cache">
+  <meta charset="UTF-8">
+</head>
+<style type="text/css">
+
+body {
+  font-family: Roboto, sans-serif;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table-container {
+  overflow-y: scroll;
+}
+
+.inline-block {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px; 
+}
+
+thead {
+  background-color: #f2f2f2;
+}
+
+th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+}
+
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+label {
+  font-weight: 600;
+}
+
+
+tbody tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+
+.editable {
+  border: 2px dashed #ccc;
+  padding: 5px;
+  cursor: text;
+  position: relative;
+  padding-right: 20px;
+}
+
+.editable:hover {
+  background-color: #e7e7e7;
+}
+
+.editable:focus {
+  background-color: white;
+  border: 2px solid #888;
+  outline: none;
+}
+
+.input-div label {
+  display: inline-block;
+  width: 150px;
+}
+
+.input-div input {
+  font-size: 1.02em;
+}
+
+.input-div {
+  margin: 4px 0;
+}
+
+.interest-rate-input .percent-symbol {
+  margin-left: -40px;
+}
+
+.editable:hover .cell-btn {
+  display: block;
+}
+
+.cell-btn {
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  transform: translate(-110%, -50%);
+}
+
+.content-container {
+  width: 95%;
+  max-width: 1280px;
+  margin: 0 auto; 
+}
+
+.chart-container{
+width: 100%;
+max-width: 100%;
+ height: 300px;
+}
+
+.valuetable{
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+.valuetablecell {
+    display:table-cell;
+    width:100px;
+    border:solid lightslategrey 1px;
+    position: relative;
+}
+.valuetablebutton {
+    width:35px;
+    height: 35px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    font-size: larger;
+}
+
+.valuetableselectbutton {
+    width:100%;
+    height: 20px;
+    position: absolute;
+    background-color: #55ff35;
+    color: black;
+    border: 0;
+}
+
+
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<body>
+<div class="content-container"> 
+<div class="header-container">
+    <h1 id="headline">Hypo Calc</h1>
+    <img src="hypoicon.png" style="float:right; padding: 10px;" width="150px" >
+</div>
+<br>
+    <div class="input-div">
+        <label for="principal">Principal Amount:</label>
+        <input type="number" id="principal" value="7400000" min="1">
+    </div>
+    <div class="input-div">
+        <label for="years">Loan Term (Years):</label>
+        <input type="number" id="years" value="30" min="1">
+    </div>
+    <div class="input-div  interest-rate-input">
+        <label for="interest">Interest:</label>
+        <input type="number" id="interest" value="5.49" min="0" step="0.01" style="width:70px;"> <span class="percent-symbol">%</span>
+    </div>
+
+    <div class="input-div  interest-rate-input">
+        <label for="inflation">Inflation:</label>
+        <input type="number" id="inflation" value="2.19" min="0" step="0.01" style="width:70px;"> <span class="percent-symbol">%</span>
+    </div>
+
+    <div class="input-div">
+        <button onclick="performCalculation()" id="runButton" style='width:200px;height: 65px;margin-top: 50px;'>Calculate Mortgage</button>
+    </div>
+
+    <div class="chart-container">
+      <canvas id="mortgageGraph"   width="800" height="300"></canvas>
+    </div>
+
+
+
+    <div class="valuetable">
+            <div class="valuetablecell">
+                <div style = "margin:20px 0;">
+                    <label id="totalPaidLabel">Total amount paid:</label><br>
+                    <label id="totalInterestPaidLabel">Total interest paid:</label><br>
+                    <label id="totalPaidInStartYearMoney">Total paid with inflation:</label>
+                 </div>
+            </div>
+            <div class="valuetablecell">  <button onclick="selectSavedValue(2)" id="selectButton2" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(2)" id="saveButton2" class="valuetablebutton" >+</button></div>
+            <div class="valuetablecell">  <button onclick="selectSavedValue(3)" id="selectButton3" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(3)" id="saveButton3" class="valuetablebutton" >+</button></div>
+            <div class="valuetablecell">  <button onclick="selectSavedValue(4)" id="selectButton4" class="valuetableselectbutton" ></button> <button onclick="saveCurrentValues(4)" id="saveButton4" class="valuetablebutton" >+</button></div>
+
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Year</th>
+                <th>Monthly Payment</th>
+                <th>With inflation</th>
+                <th>Interest Rate</th>
+                <th>Principal Paid</th>
+                <th>Interest Paid</th>
+                <th>Remaining Principal</th>
+                <th>Extra Payment</th>
+            </tr>
+        </thead>
+        <tbody id="mortgageTableBody">
+            <!-- Rows will be inserted here -->
+        </tbody>
+    </table>
+
+</div> 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script type="text/javascript" src="script.js"></script>
+</body>
+</html>
