@@ -195,6 +195,7 @@ function performCalculation() {
 		}else{
 			interestRate = interest;
 		}
+		arguments.interestRates[year-1] = interestRate;
 
 		let extraPaymentElement = document.getElementById(`extraPayment${year}`);
 		if( extraPaymentElement != null ){
@@ -204,12 +205,12 @@ function performCalculation() {
 				let epShortElem = document.getElementById(`extraPaymentShort${year}`);
 				extraPaymentShortening = epShortElem == null ? false : epShortElem.checked === true;
 			}
-			arguments.interestRates[year-1] = interestRate;
 			arguments.extraPayments[year-1] = extraPaymentAmount === 0 ? null : {amount:extraPaymentAmount, shortening: extraPaymentShortening};
 		}else{
 			arguments.extraPayments[year-1] = null;
 		}
 	}
+
 	calculateMortgage(arguments);
 
 	lastCalculationArgs = arguments;
