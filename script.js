@@ -47,6 +47,61 @@ function prepareSavingTable() {
 	parentDiv.querySelector('.valuetablebutton').style.display = "none";
 }
 
+function getPaidThisYearBreakdown(a, b, c)
+{
+	// Calculate the total sum
+	const total = a + b + c;
+
+	// Calculate the width of each segment as a percentage
+	const aWidth = (a / total) * 100;
+	const bWidth = (b / total) * 100;
+	const cWidth = (c / total) * 100;
+
+	// Pastel colors
+	const colors = {
+		a: "#B0E0E6",
+		b: "#FFB6C1",
+		c: "#CACACA"
+	};
+
+	let html = `
+    <div style="display: flex; width: 100%; height: 50px; border: 1px solid #ccc; position: relative;">
+        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)"></div>
+        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)"></div>
+        <div style="width: ${cWidth}%; background-color: ${colors.c};" onmouseover="showTooltip3(event, ${c}, this)" onmouseout="hideTooltip(this)"></div>
+    </div>
+`;
+
+	return html;
+}
+
+function showTooltip1(event, value, segment) {
+	showTooltip(event, value, segment, "Principle paid");
+}
+function showTooltip2(event, value, segment) {
+	showTooltip(event, value, segment, "Interest paid");
+}
+function showTooltip3(event, value, segment) {
+	showTooltip(event, value, segment, "Insurance paid");
+}
+
+
+function showTooltip(event, value, segment, type) {
+	var tooltip = document.getElementById('tooltip');
+	tooltip.style.display = 'block';
+	tooltip.textContent = type + ": " + formatCurrency(value);
+	tooltip.style.left = event.pageX + 'px';
+	tooltip.style.top = event.pageY + 'px';
+
+	// Highlight the hovered segment
+	segment.style.border = '2px dotted #444';
+}
+
+function hideTooltip(segment) {
+	var tooltip = document.getElementById('tooltip');
+	tooltip.style.display = 'none';
+	segment.style.border = 'none';
+}
 
 
 let totalInterestPaidEachYear = [];
@@ -80,6 +135,7 @@ function calculateMortgage(arguments) {
 
 		let interestPaidThisYear = 0;
 		let principalPaidThisYear = 0;
+		let insurancePaidThisYear = 0;
 		let monthlyPayment = 0;
 		let maxMonth = year === loanTermYears ? lastYearMonths : 12;
 		for (let month = 1; month <= maxMonth; month++) {
@@ -92,7 +148,7 @@ function calculateMortgage(arguments) {
 
 			interestPaidThisYear += interestForThisMonth;
 			principalPaidThisYear += principalForThisMonth;
-
+			insurancePaidThisYear += arguments.insurance;
 			currentBalance -= principalForThisMonth;
 		}
 
@@ -133,11 +189,10 @@ function calculateMortgage(arguments) {
 		interestRatesEachYear.push(annualInterestRate);
 		tableRows += `<tr>
 				<td>${year}</td>
-				<td>${formatCurrency(monthlyPayment)}</td>
+				<td>${formatCurrency(monthlyPayment+arguments.insurance)}</td>
 				<td>${formatCurrency(adjustForInflation(monthlyPayment, year-1, arguments.inflation))}</td>
 				<td style='position:relative'><span contenteditable="true" class='editable' id="interestRate${year}">${annualInterestRate.toFixed(2)}%</span><button title='Copy value to all rows below.' class="cell-btn">▼</button></td>
-				<td>${formatCurrency(principalPaidThisYear)}</td>
-				<td>${formatCurrency(interestPaidThisYear)}</td>
+				<td>${getPaidThisYearBreakdown(principalPaidThisYear,interestPaidThisYear,insurancePaidThisYear)}</td>
 				<td>${formatCurrency(currentBalance)}</td>
 				<td style='position:relative'> <span contenteditable="true" class='editable' id="extraPayment${year}"> ${formatCurrency(extraPaymentAmount)}</span>
 				<label for="extraPaymentShort${year}" style="display:${extraPaymentAmount>0 ? 'inline' : 'none'}"> 
@@ -179,6 +234,10 @@ function calculateMortgage(arguments) {
 				});
 			}
 		}, false);
+
+		document.getElementById(`extraPayment${year}`).addEventListener('focusout', function() {
+			performCalculation();
+		});
 
 		document.getElementById(`extraPaymentShort${year}`).addEventListener('input', function() {performCalculation()});
 		document.getElementById(`extraPaymentLower${year}`).addEventListener('input', function() {performCalculation()});
@@ -228,8 +287,10 @@ function performCalculation() {
 	const loanTermYears = parseInt(document.getElementById('years').value);
 	const interest = parseFloat(document.getElementById('interest').value);
 	const inflation = parseFloat(document.getElementById('inflation').value)/100;
+	const insurance = parseFloat(document.getElementById('insurance').value);
 	document.getElementById('interest').disabled = true;
-	let arguments = {	principal: principal, loanTermYears:loanTermYears,interest:interest,inflation:inflation };
+	document.getElementById('interest').title = "edit interest rates in columns below";
+	let arguments = {	principal: principal, loanTermYears:loanTermYears,interest:interest,inflation:inflation, insurance:insurance };
 	arguments.extraPayments = [];
 	arguments.interestRates = [];
 
@@ -245,7 +306,7 @@ function performCalculation() {
 
 		let extraPaymentElement = document.getElementById(`extraPayment${year}`);
 		if( extraPaymentElement != null ){
-			let extraPaymentAmount = parseFloat(extraPaymentElement.innerHTML.replace(/\s+/g, ''));
+			let extraPaymentAmount = parseFloat(extraPaymentElement.innerHTML.replace(/\s+/g, '')) || 0;
 			let extraPaymentShortening = false;
 			if (extraPaymentAmount > 0) {
 				let epShortElem = document.getElementById(`extraPaymentShort${year}`);
@@ -282,6 +343,7 @@ function selectSavedValue(i){
 	document.getElementById('years').value = savedValue.loanTermYears ;
 	document.getElementById('interest').value = savedValue.interest;
 	document.getElementById('inflation').value = savedValue.inflation * 100;
+	document.getElementById('insurance').value = savedValue.insurance;
 }
 
 function saveCurrentValues(i){

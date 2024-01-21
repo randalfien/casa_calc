@@ -160,6 +160,19 @@ max-width: 100%;
     font-weight: normal;
 }
 
+#tooltip {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    display: none;
+    z-index: 1000;
+    pointer-events: none; /* Prevents tooltip from interfering with mouse events */
+}
+#mainTable{
+    table-layout:fixed;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
@@ -193,6 +206,11 @@ max-width: 100%;
     </div>
 
     <div class="input-div">
+        <label for="insurance">Monthly insurance:</label>
+        <input type="number" id="insurance" value="0" min="0">
+    </div>
+
+    <div class="input-div">
         <button onclick="performCalculation()" id="runButton" style='width:200px;height: 65px;margin-top: 50px;'>Calculate Mortgage</button>
     </div>
 
@@ -214,15 +232,14 @@ max-width: 100%;
             </div>
     </div>
 
-    <table>
+    <table id="mainTable">
         <thead>
             <tr>
                 <th>Year</th>
                 <th>Monthly Payment</th>
                 <th>With inflation</th>
                 <th>Interest Rate</th>
-                <th>Principal Paid</th>
-                <th>Interest Paid</th>
+                <th>Paid</th>
                 <th>Remaining Principal</th>
                 <th>Extra Payment</th>
             </tr>
@@ -231,7 +248,7 @@ max-width: 100%;
             <!-- Rows will be inserted here -->
         </tbody>
     </table>
-
+    <div id="tooltip" style="display: none; position: absolute; padding: 5px; background-color: white; border: 1px solid #ccc; border-radius: 5px; pointer-events: none;"></div>
 </div> 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
