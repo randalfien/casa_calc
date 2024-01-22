@@ -173,6 +173,32 @@ max-width: 100%;
 #mainTable{
     table-layout:fixed;
 }
+th.th_year {
+  width: 4%
+}
+th.th_paid {
+  width: 18%
+}
+th.th_extra {
+  width: 22%
+}
+th.th_interest {
+  width: 8%
+}
+.extraPaymentSpan{
+    position: absolute;
+    bottom: 0;
+}
+#tooltip {
+	display: none;
+	position: absolute;
+	padding: 5px;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	pointer-events: none;
+	font-size: smaller;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <body>
@@ -235,20 +261,23 @@ max-width: 100%;
     <table id="mainTable">
         <thead>
             <tr>
-                <th>Year</th>
-                <th>Monthly Payment</th>
-                <th>With inflation</th>
-                <th>Interest Rate</th>
-                <th>Paid</th>
-                <th>Remaining Principal</th>
-                <th>Extra Payment</th>
+                <th class="th_year">Year</th>
+                <th class="th_monthly">Monthly Payment</th>
+                <th class="th_monthly_afi">With inflation</th>
+                <th class="th_interest">Interest Rate</th>
+                <th class="th_paid">Paid Breakdown</th>
+                <th class="th_remains">Remaining Principal</th>
+                <th class="th_extra">Extra Payment</th>
             </tr>
         </thead>
         <tbody id="mortgageTableBody">
             <!-- Rows will be inserted here -->
         </tbody>
     </table>
-    <div id="tooltip" style="display: none; position: absolute; padding: 5px; background-color: white; border: 1px solid #ccc; border-radius: 5px; pointer-events: none;"></div>
+    <div id="tooltip">
+    	<div id="tooltip_header" style="font-weight: bold"></div>
+    	<div id="tooltip_content"></div>
+    </div>
 </div> 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

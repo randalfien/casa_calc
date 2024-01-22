@@ -59,9 +59,9 @@ function getPaidThisYearBreakdown(a, b, c)
 
 	// Pastel colors
 	const colors = {
-		a: "#B0E0E6",
-		b: "#FFB6C1",
-		c: "#CACACA"
+		a: "rgba(54, 162, 235, 0.2)",
+		b: "rgba(255, 99, 132, 0.2)",
+		c: "rgba(133, 133, 133, 0.2)"
 	};
 
 	let html = `
@@ -89,12 +89,15 @@ function showTooltip3(event, value, segment) {
 function showTooltip(event, value, segment, type) {
 	var tooltip = document.getElementById('tooltip');
 	tooltip.style.display = 'block';
-	tooltip.textContent = type + ": " + formatCurrency(value);
 	tooltip.style.left = event.pageX + 'px';
 	tooltip.style.top = event.pageY + 'px';
+	var tooltipHeader = document.getElementById('tooltip_header');
+	tooltipHeader.textContent = type+":";
+	var tooltipContent = document.getElementById('tooltip_content');
+	tooltipContent.textContent = formatCurrency(value);
 
 	// Highlight the hovered segment
-	segment.style.border = '2px dotted #444';
+	segment.style.border = '2px dotted rgba(53, 53, 53, 0.2)';
 }
 
 function hideTooltip(segment) {
@@ -195,10 +198,13 @@ function calculateMortgage(arguments) {
 				<td>${getPaidThisYearBreakdown(principalPaidThisYear,interestPaidThisYear,insurancePaidThisYear)}</td>
 				<td>${formatCurrency(currentBalance)}</td>
 				<td style='position:relative'> <span contenteditable="true" class='editable' id="extraPayment${year}"> ${formatCurrency(extraPaymentAmount)}</span>
-				<label for="extraPaymentShort${year}" style="display:${extraPaymentAmount>0 ? 'inline' : 'none'}"> 
+				
+				<span class="extraPaymentSpan" style="display:${extraPaymentAmount>0 ? 'block' : 'none'}">
+					<label for="extraPaymentShort${year}" > 
 					<input type="radio" id="extraPaymentShort${year}" name="option${year}" value="shortening" ${extraPaymentShortening ? 'checked' : ''}> shorter </label>
-				<label for="extraPaymentLower${year}" style="display:${extraPaymentAmount>0 ? 'inline' : 'none'}">
+					<label for="extraPaymentLower${year}" >
 					<input type="radio" id="extraPaymentLower${year}" name="option${year}" value="lower" ${extraPaymentShortening ? '' : 'checked'}> lower payments </label>
+				</span>
 				</td>
 			  </tr>`;
 	}
@@ -225,12 +231,12 @@ function calculateMortgage(arguments) {
 			if (!isNaN(valueNumber) && valueNumber > 0) {
 				// Show the radio buttons
 				document.querySelectorAll(`#extraPaymentShort${year}, #extraPaymentLower${year}`).forEach(function(radio) {
-					radio.parentNode.style.display = 'inline';
+					radio.parentNode.parentNode.style.display = 'block';
 				});
 			} else {
 				// Hide the radio buttons
 				document.querySelectorAll(`#extraPaymentShort${year}, #extraPaymentLower${year}`).forEach(function(radio) {
-					radio.parentNode.style.display = 'none';
+					radio.parentNode.parentNode.style.display = 'none';
 				});
 			}
 		}, false);
