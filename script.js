@@ -64,15 +64,23 @@ function getPaidThisYearBreakdown(a, b, c)
 		c: "rgba(133, 133, 133, 0.2)"
 	};
 
-	let html = `
-    <div style="display: flex; width: 100%; height: 50px; border: 1px solid #ccc; position: relative;">
-        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)"></div>
-        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)"></div>
-        <div style="width: ${cWidth}%; background-color: ${colors.c};" onmouseover="showTooltip3(event, ${c}, this)" onmouseout="hideTooltip(this)"></div>
+	if( c <= 0)
+	{
+	return `
+    <div class="bargraph">
+        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
+        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
     </div>
 `;
+	}
 
-	return html;
+	return `
+    <div class="bargraph">
+        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
+        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
+        <div style="width: ${cWidth}%; background-color: ${colors.c};" onmouseover="showTooltip3(event, ${c}, this)" onmouseout="hideTooltip(this)">${Math.round(cWidth)}%</div>
+    </div>
+`;
 }
 
 function showTooltip1(event, value, segment) {
@@ -124,6 +132,7 @@ function calculateMortgage(arguments) {
 	let currentBalance = arguments.principal;
 	let totalInterestPaid = 0;
 	let totalWithInflation = 0;
+	let totalInsurancePaid = 0;
 	totalInterestPaidEachYear = [];
 	remainingBalanceEachYear = [];
 	interestRatesEachYear = [];
@@ -170,7 +179,7 @@ function calculateMortgage(arguments) {
 
 		currentBalance -= extraPaymentAmount;
 		principalPaidThisYear += extraPaymentAmount;
-
+		totalInsurancePaid += insurancePaidThisYear;
 		totalInterestPaid += interestPaidThisYear;
 
 		  // Check if the mortgage is being shortened
@@ -201,9 +210,9 @@ function calculateMortgage(arguments) {
 				
 				<span class="extraPaymentSpan" style="display:${extraPaymentAmount>0 ? 'block' : 'none'}">
 					<label for="extraPaymentShort${year}" > 
-					<input type="radio" id="extraPaymentShort${year}" name="option${year}" value="shortening" ${extraPaymentShortening ? 'checked' : ''}> shorter </label>
+					<input type="radio" id="extraPaymentShort${year}" name="option${year}" value="shortening" ${extraPaymentShortening ? 'checked' : ''}> shorter period</label>
 					<label for="extraPaymentLower${year}" >
-					<input type="radio" id="extraPaymentLower${year}" name="option${year}" value="lower" ${extraPaymentShortening ? '' : 'checked'}> lower payments </label>
+					<input type="radio" id="extraPaymentLower${year}" name="option${year}" value="lower" ${extraPaymentShortening ? '' : 'checked'}> lower payments</label>
 				</span>
 				</td>
 			  </tr>`;
@@ -212,12 +221,12 @@ function calculateMortgage(arguments) {
 	loanTermYearsSaved = loanTermYears;
 
 	document.getElementById('mortgageTableBody').innerHTML = tableRows;
+	let output = {total:totalInterestPaid + arguments.principal + totalInsurancePaid, interest:totalInterestPaid, total_afi:totalWithInflation};
+	savedValues[selectedSaveSpot].output = output;
 
-	savedValues[selectedSaveSpot].output = {total:totalInterestPaid + arguments.principal, interest:totalInterestPaid, total_afi:totalWithInflation};
-
-	document.getElementById('totalInterestPaidLabel'+selectedSaveSpot).innerHTML = "Total interest paid: " + formatCurrency(totalInterestPaid);
-	document.getElementById('totalPaidLabel'+selectedSaveSpot).innerHTML = "Total amount paid: " + formatCurrency(totalInterestPaid + arguments.principal);
-	document.getElementById('totalPaidInStartYearMoney'+selectedSaveSpot).innerHTML = "Total AFI: " + formatCurrency(totalWithInflation);
+	document.getElementById('totalInterestPaidLabel'+selectedSaveSpot).innerHTML = "Total interest paid: " + formatCurrency(output.interest);
+	document.getElementById('totalPaidLabel'+selectedSaveSpot).innerHTML = "Total amount paid: " + formatCurrency(output.total);
+	document.getElementById('totalPaidInStartYearMoney'+selectedSaveSpot).innerHTML = "Total AFI: " + formatCurrency(output.total_afi);
 
 	updateDifferences();
 	updateGraph(totalInterestPaidEachYear, remainingBalanceEachYear,interestRatesEachYear);
