@@ -68,17 +68,17 @@ function getPaidThisYearBreakdown(a, b, c)
 	{
 	return `
     <div class="bargraph">
-        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
-        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
+        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmousemove="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
+        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmousemove="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
     </div>
 `;
 	}
 
 	return `
     <div class="bargraph">
-        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmouseover="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
-        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmouseover="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
-        <div style="width: ${cWidth}%; background-color: ${colors.c};" onmouseover="showTooltip3(event, ${c}, this)" onmouseout="hideTooltip(this)">${Math.round(cWidth)}%</div>
+        <div style="width: ${aWidth}%; background-color: ${colors.a};" onmousemove="showTooltip1(event, ${a}, this)" onmouseout="hideTooltip(this)">${Math.round(aWidth)}%</div>
+        <div style="width: ${bWidth}%; background-color: ${colors.b};" onmousemove="showTooltip2(event, ${b}, this)" onmouseout="hideTooltip(this)">${Math.round(bWidth)}%</div>
+        <div style="width: ${cWidth}%; background-color: ${colors.c};" onmousemove="showTooltip3(event, ${c}, this)" onmouseout="hideTooltip(this)">${Math.round(cWidth)}%</div>
     </div>
 `;
 }
@@ -97,7 +97,7 @@ function showTooltip3(event, value, segment) {
 function showTooltip(event, value, segment, type) {
 	var tooltip = document.getElementById('tooltip');
 	tooltip.style.display = 'block';
-	tooltip.style.left = event.pageX + 'px';
+	tooltip.style.left = (event.pageX+10) + 'px';
 	tooltip.style.top = event.pageY + 'px';
 	var tooltipHeader = document.getElementById('tooltip_header');
 	tooltipHeader.textContent = type+":";
